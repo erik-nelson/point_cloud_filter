@@ -1,0 +1,15 @@
+filtering:
+  # Apply a voxel grid filter on incoming point clouds.
+  grid_filter: true
+
+  # Resolution of voxel grid filter.
+  grid_res: 0.75
+
+  # Apply a statistical outlier filter on incoming point clouds.
+  outlier_filter: true
+
+  # Standard deviation threshold in distance to neighbors for outlier removal.
+  outlier_std: 0.3
+
+  # Number of nearest neighbors for outlier removal filter.
+  outlier_knn: 30
