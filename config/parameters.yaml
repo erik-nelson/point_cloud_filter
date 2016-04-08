@@ -3,7 +3,7 @@ filtering:
   grid_filter: true
 
   # Resolution of voxel grid filter.
-  grid_res: 0.75
+  grid_res: 0.1
 
   # Apply a statistical outlier filter on incoming point clouds.
   outlier_filter: true
