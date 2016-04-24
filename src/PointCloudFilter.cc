@@ -38,6 +38,7 @@
 #include <parameter_utils/ParameterUtils.h>
 
 #include <pcl/filters/filter.h>
+#include <pcl/filters/random_sample.h>
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/filters/voxel_grid.h>
 
@@ -66,9 +67,18 @@ bool PointCloudFilter::LoadParameters(const ros::NodeHandle& n) {
   // Load filtering parameters.
   if (!pu::Get("filtering/grid_filter", params_.grid_filter)) return false;
   if (!pu::Get("filtering/grid_res", params_.grid_res)) return false;
+
+  if (!pu::Get("filtering/random_filter", params_.random_filter)) return false;
+  if (!pu::Get("filtering/decimate_percentage", params_.decimate_percentage))
+    return false;
+
   if (!pu::Get("filtering/outlier_filter", params_.outlier_filter)) return false;
   if (!pu::Get("filtering/outlier_std", params_.outlier_std)) return false;
   if (!pu::Get("filtering/outlier_knn", params_.outlier_knn)) return false;
+
+  // Cap to [0.0, 1.0].
+  params_.decimate_percentage =
+      std::min(1.0, std::max(0.0, params_.decimate_percentage));
 
   return true;
 }
@@ -90,6 +100,16 @@ bool PointCloudFilter::Filter(const PointCloud::ConstPtr& points,
   // Copy input points.
   *points_filtered = *points;
 
+  // Apply a random downsampling filter to the incoming point cloud.
+  if (params_.random_filter) {
+    const int n_points = static_cast<int>((1.0 - params_.decimate_percentage) *
+                                          points_filtered->size());
+    pcl::RandomSample<pcl::PointXYZ> random_filter;
+    random_filter.setSample(n_points);
+    random_filter.setInputCloud(points_filtered);
+    random_filter.filter(*points_filtered);
+  }
+
   // Apply a voxel grid filter to the incoming point cloud.
   if (params_.grid_filter) {
     pcl::VoxelGrid<pcl::PointXYZ> grid;
@@ -97,6 +117,7 @@ bool PointCloudFilter::Filter(const PointCloud::ConstPtr& points,
     grid.setInputCloud(points_filtered);
     grid.filter(*points_filtered);
   }
+
 
   // Remove statistical outliers in incoming the point cloud.
   if (params_.outlier_filter) {
@@ -106,4 +127,6 @@ bool PointCloudFilter::Filter(const PointCloud::ConstPtr& points,
     sor.setStddevMulThresh(params_.outlier_std);
     sor.filter(*points_filtered);
   }
+
+  return true;
 }

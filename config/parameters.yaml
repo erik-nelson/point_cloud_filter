@@ -5,6 +5,12 @@ filtering:
   # Resolution of voxel grid filter.
   grid_res: 0.1
 
+  # Apply a random downsample filter on incoming point clouds.
+  random_filter: true
+
+  # Percentage of points to discard. Must be between 0.0 and 1.0.
+  decimate_percentage: 0.5
+
   # Apply a statistical outlier filter on incoming point clouds.
   outlier_filter: true
 
@@ -12,4 +18,4 @@ filtering:
   outlier_std: 0.3
 
   # Number of nearest neighbors for outlier removal filter.
-  outlier_knn: 30
+  outlier_knn: 10

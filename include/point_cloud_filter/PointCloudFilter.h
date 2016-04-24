@@ -69,6 +69,12 @@ class PointCloudFilter {
     // Resolution of voxel grid filter.
     double grid_res;
 
+    // Apply a random downsampling filter.
+    bool random_filter;
+
+    // Percentage of points to discard. Must be between 0.0 and 1.0;
+    double decimate_percentage;
+
     // Apply a statistical outlier filter.
     bool outlier_filter;
 
