@@ -9,13 +9,23 @@ filtering:
   random_filter: true
 
   # Percentage of points to discard. Must be between 0.0 and 1.0.
-  decimate_percentage: 0.5
+  decimate_percentage: 0.8
 
   # Apply a statistical outlier filter on incoming point clouds.
   outlier_filter: true
 
   # Standard deviation threshold in distance to neighbors for outlier removal.
-  outlier_std: 0.3
+  outlier_std: 1.0
 
   # Number of nearest neighbors for outlier removal filter.
   outlier_knn: 10
+
+  # Apply a radius filter on incoming point clouds.
+  radius_filter: false
+
+  # Size of the radius outlier filter.
+  radius: 0.15
+
+  # If this number of neighbors are not found within a radius of a point, remove
+  # the point.
+  radius_knn: 1

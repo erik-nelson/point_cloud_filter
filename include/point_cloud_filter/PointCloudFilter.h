@@ -84,6 +84,16 @@ class PointCloudFilter {
 
     // Number of nearest neighbors to use for outlier filter.
     unsigned int outlier_knn;
+
+    // Apply a radius outlier filter.
+    bool radius_filter;
+
+    // Size of the radius filter.
+    double radius;
+
+    // If this number of neighbors are not found within a radius around each
+    // point, remove that point.
+    unsigned int radius_knn;
   } params_;
 };
 

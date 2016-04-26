@@ -38,6 +38,7 @@
 #include <parameter_utils/ParameterUtils.h>
 
 #include <pcl/filters/filter.h>
+#include <pcl/filters/radius_outlier_removal.h>
 #include <pcl/filters/random_sample.h>
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/filters/voxel_grid.h>
@@ -75,6 +76,10 @@ bool PointCloudFilter::LoadParameters(const ros::NodeHandle& n) {
   if (!pu::Get("filtering/outlier_filter", params_.outlier_filter)) return false;
   if (!pu::Get("filtering/outlier_std", params_.outlier_std)) return false;
   if (!pu::Get("filtering/outlier_knn", params_.outlier_knn)) return false;
+
+  if (!pu::Get("filtering/radius_filter", params_.radius_filter)) return false;
+  if (!pu::Get("filtering/radius", params_.radius)) return false;
+  if (!pu::Get("filtering/radius_knn", params_.radius_knn)) return false;
 
   // Cap to [0.0, 1.0].
   params_.decimate_percentage =
@@ -118,7 +123,6 @@ bool PointCloudFilter::Filter(const PointCloud::ConstPtr& points,
     grid.filter(*points_filtered);
   }
 
-
   // Remove statistical outliers in incoming the point cloud.
   if (params_.outlier_filter) {
     pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
@@ -126,6 +130,16 @@ bool PointCloudFilter::Filter(const PointCloud::ConstPtr& points,
     sor.setMeanK(params_.outlier_knn);
     sor.setStddevMulThresh(params_.outlier_std);
     sor.filter(*points_filtered);
+  }
+
+  // Remove points without a threshold number of neighbors within a specified
+  // radius.
+  if (params_.radius_filter) {
+    pcl::RadiusOutlierRemoval<pcl::PointXYZ> rad;
+    rad.setInputCloud(points_filtered);
+    rad.setRadiusSearch(params_.radius);
+    rad.setMinNeighborsInRadius(params_.radius_knn);
+    rad.filter(*points_filtered);
   }
 
   return true;
